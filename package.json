@@ -1,0 +1,44 @@
+{
+  "name": "@rbxts/uzi",
+  "version": "0.1.0",
+  "main": "out/init.lua",
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc -w",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "types": "out/index.d.ts",
+  "files": [
+    "out",
+    "!**/*.tsbuildinfo"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@rbxts/compiler-types": "^3.0.0-types.0",
+    "@rbxts/types": "^1.0.813",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-roblox-ts": "^0.0.36",
+    "prettier": "^3.4.2",
+    "roblox-ts": "^3.0.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@rbxts/charm": "^0.8.1",
+    "@rbxts/immut": "^0.4.4-ts.0",
+    "@rbxts/ripple": "^0.9.2",
+    "@rbxts/services": "^1.5.5",
+    "@rbxts/ui-labs": "^2.3.5",
+    "@rbxts/vide": "^0.5.3",
+    "@rbxts/vide-charm": "^0.1.1"
+  }
+}
