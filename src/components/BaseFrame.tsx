@@ -1,4 +1,5 @@
-import Vide, { cleanup, Derivable, Node, read } from "@rbxts/vide";
+import Vide, { Derivable, Node, read } from "@rbxts/vide";
+import { destroyCleanUp } from "../utils/destroyCleanUp";
 
 export interface BaseFrameProps {
 	size?: Derivable<UDim2 | undefined>;
@@ -47,7 +48,7 @@ export function BaseFrame({
 			AnchorPoint={defaultValueDerivable(anchorPoint, new Vector2(0.5, 0.5))}
 			Rotation={defaultValueDerivable(rotation, 0)}
 			LayoutOrder={layoutOrder}
-			action={cleanup}
+			action={destroyCleanUp}
 		>
 			{children}
 		</frame>

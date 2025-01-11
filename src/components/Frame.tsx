@@ -5,6 +5,7 @@ import Vide from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
 import { borderDataBase } from "../data/borderDataBase";
 import { BorderProps } from "./Border";
+import { destroyCleanUp } from "../utils/destroyCleanUp";
 
 export interface FrameProps {
 	size?: Derivable<UDim2>;
@@ -85,7 +86,7 @@ export function Frame<T extends FrameProps, G>(props: FrameProps) {
 					{() => (
 						<uigradient
 							Rotation={gradientRotation}
-							action={cleanup}
+							action={destroyCleanUp}
 							Color={() => {
 								const val = read(color);
 								if (!typeIs(val, "Color3")) return val?.sequence() ?? defaultColorSequence;
@@ -96,9 +97,7 @@ export function Frame<T extends FrameProps, G>(props: FrameProps) {
 								if (!typeIs(val, "number")) return val?.sequence() ?? defaultNumberSequence;
 								return defaultNumberSequence;
 							}}
-						>
-							{action(cleanup)}
-						</uigradient>
+						/>
 					)}
 				</Show>
 				{children}

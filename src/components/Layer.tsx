@@ -1,4 +1,5 @@
 import { IS_EDIT } from "../constants";
+import { destroyCleanUp } from "../utils/destroyCleanUp";
 
 import { Group } from "./Group";
 import { cleanup, Node, show } from "@rbxts/vide";
@@ -20,7 +21,7 @@ export function Layer({ displayOrder, children }: LayerProps) {
 				DisplayOrder={displayOrder}
 				IgnoreGuiInset
 				ZIndexBehavior="Sibling"
-				action={cleanup}
+				action={destroyCleanUp}
 			>
 				{children}
 			</screengui>
