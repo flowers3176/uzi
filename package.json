@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/flowers3176/uzi.git"
   },
   "devDependencies": {
     "@rbxts/compiler-types": "^3.0.0-types.0",
