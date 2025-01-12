@@ -9,6 +9,7 @@ export interface BorderProps {
 	offset?: Derivable<UDim2>;
 	transparency?: Derivable<number | Gradient<number>>;
 	zIndex?: Derivable<number>;
+	gradientRotation?: Derivable<number>;
 }
 
 let id = 0;

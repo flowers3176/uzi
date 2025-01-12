@@ -1,5 +1,5 @@
-import { action, cleanup, Derivable, For, Node, read, Show, source } from "@rbxts/vide";
-import { BaseFrame, BaseFrameProps } from "./BaseFrame";
+import { action, Derivable, For, Node, read, Show, source } from "@rbxts/vide";
+import { BaseFrame } from "./BaseFrame";
 import { Gradient } from "../utils/gradient";
 import Vide from "@rbxts/vide";
 import { useAtom } from "@rbxts/vide-charm";
@@ -8,6 +8,7 @@ import { BorderProps } from "./Border";
 import { destroyCleanUp } from "../utils/destroyCleanUp";
 
 export interface FrameProps {
+	name?: Derivable<string>;
 	size?: Derivable<UDim2>;
 	position?: Derivable<UDim2>;
 	anchorPoint?: Derivable<Vector2>;
@@ -35,6 +36,7 @@ export function Frame<T extends FrameProps, G>(props: FrameProps) {
 		color,
 		rotation,
 		layoutOrder,
+		name,
 		position,
 		zIndex,
 		size,
@@ -48,14 +50,15 @@ export function Frame<T extends FrameProps, G>(props: FrameProps) {
 		const frameRefVal = frameRef();
 		const borderDataVal = borderDataBaseSRC();
 		if (frameRefVal === undefined) return [];
-		const frameBordersUnformated = borderDataVal.get(frameRefVal);
-		if (!frameBordersUnformated) return [];
+		const frameBordersUnFormatted = borderDataVal.get(frameRefVal);
+		if (!frameBordersUnFormatted) return [];
 		const arrFormat: BorderProps[] = [];
-		frameBordersUnformated.forEach((v) => arrFormat.push(v));
+		frameBordersUnFormatted.forEach((v) => arrFormat.push(v));
 		return arrFormat;
 	};
 	return (
 		<BaseFrame
+			name={name}
 			active={active}
 			transparency={1}
 			position={position}
@@ -65,6 +68,7 @@ export function Frame<T extends FrameProps, G>(props: FrameProps) {
 			anchorPoint={anchorPoint}
 		>
 			<BaseFrame
+				name={"Body"}
 				rotation={rotation}
 				active={active}
 				clipsDescendants={clipsDescendants}
@@ -102,19 +106,20 @@ export function Frame<T extends FrameProps, G>(props: FrameProps) {
 				</Show>
 				{children}
 			</BaseFrame>
-			<BaseFrame size={UDim2.fromScale(1, 1)} transparency={1} zIndex={-1}>
+			<BaseFrame size={UDim2.fromScale(1, 1)} transparency={1} zIndex={-1} name={"BorderContainers"}>
 				<For each={frameBorders}>
-					{({ color, offset, thickness, transparency, zIndex }) => (
+					{({ color, offset, thickness, transparency, zIndex, gradientRotation }) => (
 						<Frame
 							color={color}
 							rotation={rotation}
+							gradientRotation={gradientRotation}
 							anchorPoint={new Vector2(0.5, 0.5)}
 							transparency={transparency}
 							zIndex={zIndex}
 							size={() => {
-								const ticknessVal = read(thickness);
-								const scale = (ticknessVal?.Scale ?? 0) * 2;
-								const offset = (ticknessVal?.Offset ?? 0) * 2;
+								const thicknessVal = read(thickness);
+								const scale = (thicknessVal?.Scale ?? 0) * 2;
+								const offset = (thicknessVal?.Offset ?? 0) * 2;
 								return UDim2.fromScale(1, 1).add(new UDim2(scale, offset, scale, offset));
 							}}
 							position={() => UDim2.fromScale(0.5, 0.5).add(read(offset) ?? UDim2.fromOffset())}

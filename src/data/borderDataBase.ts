@@ -12,6 +12,7 @@ type BorderDataBase = ReadonlyMap<
 			offset?: Derivable<UDim2>;
 			transparency?: Derivable<number | Gradient<number>>;
 			zIndex?: Derivable<number>;
+			gradientRotation?: Derivable<number>;
 		}
 	>
 >;

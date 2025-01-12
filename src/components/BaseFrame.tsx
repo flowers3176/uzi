@@ -2,6 +2,7 @@ import Vide, { Derivable, Node, read } from "@rbxts/vide";
 import { destroyCleanUp } from "../utils/destroyCleanUp";
 
 export interface BaseFrameProps {
+	name?: Derivable<string>;
 	size?: Derivable<UDim2 | undefined>;
 	position?: Derivable<UDim2 | undefined>;
 	color?: Derivable<Color3 | undefined>;
@@ -24,6 +25,7 @@ function defaultValueDerivable<T, V extends Derivable<T | undefined> = Derivable
  * A Frame component for internal usage
  */
 export function BaseFrame({
+	name,
 	active,
 	color,
 	position,
@@ -38,6 +40,7 @@ export function BaseFrame({
 }: BaseFrameProps) {
 	return (
 		<frame
+			Name={name}
 			Active={defaultValueDerivable(active, true)}
 			BackgroundColor3={defaultValueDerivable(color, new Color3(1, 1, 1))}
 			Position={defaultValueDerivable(position, UDim2.fromScale(0.5, 0.5))}
