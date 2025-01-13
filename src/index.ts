@@ -1,4 +1,4 @@
-import { JetBrainsMono } from "./data/fonts/JetBrainsMono";
+export { JetBrainsMono } from "./data/fonts/JetBrainsMono";
 export { Frame } from "./components/Frame";
 export { Input } from "./components/Input";
 export { Border } from "./components/Border";
