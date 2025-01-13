@@ -45,7 +45,6 @@ function Char({ font, data, scale, layoutOrder, children, lines }: CharProps) {
 		const { width, height } = read(data);
 		return UDim2.fromOffset((width * read(scale)) / read(lines), (height * read(scale)) / read(lines));
 	};
-	print("Image change");
 	return (
 		<BaseFrame layoutOrder={layoutOrder} size={size} name={() => read(data).text} transparency={1}>
 			<Image
@@ -107,7 +106,6 @@ export function TextLabel({
 				),
 			0,
 		);
-		print(result);
 		const result2 = creationList().reduce(
 			(acc, v) =>
 				math.max(

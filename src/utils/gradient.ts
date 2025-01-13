@@ -70,9 +70,6 @@ export class Gradient<T extends number | Color3, B extends GradientInput<T> = Gr
 		sortedTimeMotions.forEach((_v, i, arr) => {
 			const v = _v.get();
 			const value = sortedValueMotions[i].get();
-			if (!NumberSequence) {
-				print((value as Color3).R);
-			}
 			seqeuences.push(
 				(isNumberSequence
 					? new NumberSequenceKeypoint(v, value as number)
