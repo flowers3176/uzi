@@ -1,10 +1,35 @@
-UZI is a set of vide components that wraps around basic instrict elements like Frame current it's in version 0.1.0 so theres no image labels and text box
+# UZI
+## * Current Components
+* Frame (Supports Gradient and Border)
+* Border
+* Corner (Has normal Behavior)
+* Group (Ty littensy)
+* Image (Supports gradients)
+* Input (Supports GuiObjects)
+* Layer (Ty littensy)
+* TextLabel (Supports CustomFont)
+* Transition (Ty littensy)
 
-```tsx
-				<Frame color={new Color3(1, 1, 1)}>
-					<Corner radius={new UDim(0.5)} />
-					<Border thickness={new UDim(0, 5)} color={new Color3(0, 0, 0)} />
-				</Frame>
+## * Current Modifers (classes)
+* CustomFont (Currently only scale to fit) DOESNT SUPPORT SOME CHARACTERS
+*  Gradient
+
+## * Up next
+* CanvasFrame 
+* TextSize for custom fonts
+* Bug fixes
+
+## * Notes
+* Doesn't Support Fonts that go over their BaseLine
+* Everything is Centered and has a default size (subject to change)
+
+## * How to use CustomFont 
+This is the website where you generate the SpriteSheet and JSON that's needed
+https://kodaloid.com/tools/sprite-font-generator/
+Don't forget to turn off Flip Y Cordinate in Options and tweak the canvas size and font size to get a high res font, (don't go above 1024x1024).
+Then copy the JSON and get an assetId from the downloaded image and use the class like the following 
+```ts
+import data from "./jetBrainsMono.data";
+import { CustomFont } from "../../utils/customFont";
+export const JetBrainsMono = new CustomFont("rbxassetid://96002929695676", data);
 ```
-Frame's default size is 100x100 px and they are centered in by default with anchorpoint and position so this would look like this
-![image](https://github.com/user-attachments/assets/1d09e18f-0988-4d48-95db-d79d29f78bcc)
