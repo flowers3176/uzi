@@ -7,7 +7,7 @@
     "watch": "rbxtsc -w",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [],
+  "keywords": ["rbxts", "rbxts-uzi", "vide"],
   "author": "",
   "license": "ISC",
   "description": "",
