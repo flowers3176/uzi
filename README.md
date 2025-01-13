@@ -1,5 +1,5 @@
 # UZI
-## * Current Components
+## Current Components
 * Frame (Supports Gradient and Border)
 * Border
 * Corner (Has normal Behavior)
@@ -10,20 +10,20 @@
 * TextLabel (Supports CustomFont)
 * Transition (Ty littensy)
 
-## * Current Modifers (classes)
+## Current Modifers (classes)
 * CustomFont (Currently only scale to fit) DOESNT SUPPORT SOME CHARACTERS
 *  Gradient
 
-## * Up next
+## Up next
 * CanvasFrame 
 * TextSize for custom fonts
 * Bug fixes
 
-## * Notes
+## Notes
 * Doesn't Support Fonts that go over their BaseLine
 * Everything is Centered and has a default size (subject to change)
 
-## * How to use CustomFont 
+## How to use CustomFont 
 This is the website where you generate the SpriteSheet and JSON that's needed
 https://kodaloid.com/tools/sprite-font-generator/
 Don't forget to turn off Flip Y Cordinate in Options and tweak the canvas size and font size to get a high res font, (don't go above 1024x1024).
