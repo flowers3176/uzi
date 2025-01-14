@@ -7,5 +7,6 @@ export { Layer } from "./components/Layer";
 export { Group } from "./components/Group";
 export { TextLabel } from "./components/TextLabel";
 export { Transition } from "./components/Transition";
+export { Image } from "./components/Image";
 export { Gradient } from "./utils/gradient";
 export { CustomFont } from "./utils/customFont";
