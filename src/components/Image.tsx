@@ -32,7 +32,7 @@ export interface ImageProps {
 		| "Fit"
 		| "Crop"
 	>;
-	tileSize: Derivable<UDim2>;
+	tileSize?: Derivable<UDim2>;
 	rotation?: Derivable<number>;
 	gradientRotation?: Derivable<number>;
 }
