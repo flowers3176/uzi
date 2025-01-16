@@ -20,7 +20,19 @@ export interface ImageProps {
 	rectSize?: Derivable<Vector2>;
 	sliceCenter?: Derivable<Rect>;
 	sliceScale?: Derivable<number>;
-	scaleType?: Derivable<Enum.ScaleType>;
+	scaleType?: Derivable<
+		| Enum.ScaleType.Stretch
+		| Enum.ScaleType.Slice
+		| Enum.ScaleType.Tile
+		| Enum.ScaleType.Fit
+		| Enum.ScaleType.Crop
+		| "Stretch"
+		| "Slice"
+		| "Tile"
+		| "Fit"
+		| "Crop"
+	>;
+	tileSize: Derivable<UDim2>;
 	rotation?: Derivable<number>;
 	gradientRotation?: Derivable<number>;
 }
@@ -40,6 +52,7 @@ export function Image({
 	rectSize,
 	sliceCenter,
 	imageId,
+	tileSize,
 	sliceScale,
 	position,
 	rotation,
@@ -70,6 +83,7 @@ export function Image({
 				return 0;
 			}}
 			BackgroundTransparency={1}
+			TileSize={tileSize}
 			ScaleType={() => read(scaleType) ?? "Fit"}
 			Size={() => read(size) ?? UDim2.fromOffset(100, 100)}
 			Visible={visible}
