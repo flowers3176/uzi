@@ -27,7 +27,7 @@ export interface FrameProps {
 const defaultColorSequence = new ColorSequence(new Color3(1, 1, 1));
 const defaultNumberSequence = new NumberSequence(0);
 
-export function Frame<T extends FrameProps, G>(props: FrameProps) {
+export function Frame(props: FrameProps) {
 	const {
 		active,
 		children,
