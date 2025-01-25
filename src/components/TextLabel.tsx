@@ -31,6 +31,9 @@ interface CharProps {
 		height: number;
 		baseline: number;
 	}>;
+	gradientRotation?: Derivable<number>;
+	gradientOffset?: Derivable<Vector2>;
+	color?: Derivable<Color3 | Gradient<Color3>>;
 	font: Derivable<CustomFont>;
 	scale: Derivable<number>;
 	layoutOrder: Derivable<number>;
@@ -41,7 +44,7 @@ interface CharProps {
 const defaultColorSequence = new ColorSequence(new Color3(1, 1, 1));
 const defaultNumberSequence = new NumberSequence(0);
 
-function Char({ font, data, scale, layoutOrder, children, lines }: CharProps) {
+function Char({ font, data, scale, layoutOrder, children, lines, color, gradientOffset, gradientRotation }: CharProps) {
 	const size = () => {
 		const { width, height } = read(data);
 		return UDim2.fromOffset((width * read(scale)) / read(lines), (height * read(scale)) / read(lines));
@@ -55,6 +58,9 @@ function Char({ font, data, scale, layoutOrder, children, lines }: CharProps) {
 					const { x, y } = read(data);
 					return new Vector2(x, y);
 				}}
+				color={color}
+				gradientOffset={gradientOffset}
+				gradientRotation={gradientRotation}
 				rectSize={() => {
 					const { width, height } = read(data);
 					return new Vector2(width, height);
@@ -178,7 +184,6 @@ export function TextLabel({
 										)
 									}
 									layoutOrder={i}
-									color={BrickColor.random().Color}
 									transparency={1}
 								>
 									<uilistlayout
@@ -195,6 +200,9 @@ export function TextLabel({
 													scale={charSizeScale}
 													font={font as CustomFont}
 													data={charData}
+													color={color}
+													gradientRotation={gradientRotation}
+													gradientOffset={gradientOffset}
 												></Char>
 											);
 										}}
