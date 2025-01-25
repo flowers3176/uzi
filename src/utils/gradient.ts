@@ -1,42 +1,60 @@
 import { Darken, Lighten } from "@rbxts/colour-utils";
+import Signal, { Connection } from "@rbxts/lemon-signal";
 import { createMotion, Motion, PartialMotionGoal, SpringOptions } from "@rbxts/ripple";
-import { source, Source } from "@rbxts/vide";
+import { RunService } from "@rbxts/services";
+import { cleanup, source, Source, untrack } from "@rbxts/vide";
+import { deepEqual } from "./deep-equal";
 
 type GradientInput<T> = T | [time: number, value: T];
-type PrimativeInput<T> = T extends Color3 ? Color3 : number;
+const updateSignal = new Signal();
+if (RunService.IsServer()) {
+	const connection = RunService.Heartbeat.Connect(() => updateSignal.Fire());
+	pcall(cleanup, connection);
+	pcall(cleanup, updateSignal);
+} else {
+	const connection = RunService.RenderStepped.Connect(() => updateSignal.Fire());
+	pcall(cleanup, connection);
+	pcall(cleanup, updateSignal);
+}
 export class Gradient<T extends number | Color3> {
 	protected timeMotions: Motion<number>[] = [];
 	protected valueMotions: Motion<T>[] = [];
 	private privateSequence: Source<T extends Color3 ? ColorSequence : NumberSequence>;
+	private connection: Connection;
 	sequence = (): T extends Color3 ? ColorSequence : NumberSequence => this.privateSequence();
 	constructor(input: GradientInput<T>[]) {
+		pcall(cleanup, () => this.destroy());
 		this.setupMotion(this.formatInput(input));
 		this.privateSequence = source(this.calcuclateSequence());
+		this.connection = updateSignal.Connect(() => this.updateSequence());
 	}
 
 	protected lightness = 0;
 	protected darkness = 0;
 	applyLightness(percentage: number) {
-		if (!typeIs(this.valueMotions[0], "Color3")) error("Apply lightness can only be used on color gradients");
+		if (!typeIs(this.valueMotions[0].get(), "Color3")) error("Apply lightness can only be used on color gradients");
 		const newGradient = new Gradient([new Color3(), new Color3()]);
 		newGradient.lightness = percentage;
 		newGradient.timeMotions = (this as Gradient<Color3>).timeMotions;
 		newGradient.valueMotions = (this as Gradient<Color3>).valueMotions;
+		newGradient.updateSequence();
 		return newGradient;
 	}
 
 	applyDarkness(percentage: number) {
-		if (!typeIs(this.valueMotions[0], "Color3")) error("Apply darkness can only be used on color gradients");
+		if (!typeIs(this.valueMotions[0].get(), "Color3")) error("Apply darkness can only be used on color gradients");
 		const newGradient = new Gradient([new Color3(), new Color3()]);
 		newGradient.darkness = percentage;
 		newGradient.timeMotions = (this as Gradient<Color3>).timeMotions;
 		newGradient.valueMotions = (this as Gradient<Color3>).valueMotions;
+		newGradient.updateSequence();
 		return newGradient;
 	}
 
 	detach() {
 		this.timeMotions = [...this.timeMotions];
 		this.valueMotions = [...this.valueMotions];
+		return this;
 	}
 
 	private setupMotion(formatedInput: [time: number, value: T][]) {
@@ -48,7 +66,6 @@ export class Gradient<T extends number | Color3> {
 				const motion = createMotion(val);
 				motion.start();
 				this.timeMotions[i] = motion;
-				motion.onStep(() => this.updateSequence());
 				return;
 			} else {
 				existingMotion.spring(val);
@@ -60,7 +77,6 @@ export class Gradient<T extends number | Color3> {
 				const motion = createMotion(val);
 				motion.start();
 				this.valueMotions[i] = motion;
-				motion.onStep(() => this.updateSequence());
 				return;
 			} else {
 				existingMotion.spring(val as PartialMotionGoal<T>);
@@ -134,7 +150,13 @@ export class Gradient<T extends number | Color3> {
 	}
 
 	private updateSequence() {
-		this.privateSequence(this.calcuclateSequence());
+		untrack(() => {
+			if (!this.privateSequence) return;
+			const old = this.privateSequence();
+			const result = this.calcuclateSequence();
+			if (deepEqual(old.Keypoints, result.Keypoints)) return;
+			this.privateSequence(result);
+		});
 	}
 
 	spring(input: T[], springOptions?: SpringOptions) {
@@ -158,7 +180,6 @@ export class Gradient<T extends number | Color3> {
 				const motion = createMotion(val);
 				motion.start();
 				this.timeMotions[i] = motion;
-				motion.onStep(() => this.updateSequence());
 				return;
 			} else {
 				existingMotion.spring(val);
@@ -208,7 +229,6 @@ export class Gradient<T extends number | Color3> {
 				const motion = createMotion(val);
 				motion.start();
 				this.timeMotions[i] = motion;
-				motion.onStep(() => this.updateSequence());
 				return;
 			} else {
 				existingMotion.set(val);
@@ -238,11 +258,12 @@ export class Gradient<T extends number | Color3> {
 	}
 
 	destroy() {
-		this.timeMotions.forEach((v) => {
-			v.destroy();
+		this.timeMotions?.forEach((v) => {
+			v?.destroy();
 		});
-		this.valueMotions.forEach((v) => {
-			v.destroy();
+		this.valueMotions?.forEach((v) => {
+			v?.destroy();
 		});
+		this.connection?.Disconnect();
 	}
 }
