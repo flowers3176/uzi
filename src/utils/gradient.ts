@@ -1,30 +1,42 @@
+import { Darken, Lighten } from "@rbxts/colour-utils";
 import { createMotion, Motion, PartialMotionGoal, SpringOptions } from "@rbxts/ripple";
 import { source, Source } from "@rbxts/vide";
 
 type GradientInput<T> = T | [time: number, value: T];
 type PrimativeInput<T> = T extends Color3 ? Color3 : number;
 export class Gradient<T extends number | Color3> {
-	private timeMotions: Motion<number>[] = [];
-	private valueMotions: Motion<T>[] = [];
-	private privateSequence: Source<
-		T extends Color3 | number
-			? PrimativeInput<B> extends number
-				? NumberSequence
-				: ColorSequence
-			: T extends Color3
-				? ColorSequence
-				: NumberSequence
-	>;
-	sequence: () => T extends Color3 | number
-		? PrimativeInput<B> extends number
-			? NumberSequence
-			: ColorSequence
-		: T extends Color3
-			? ColorSequence
-			: NumberSequence = () => this.privateSequence();
+	protected timeMotions: Motion<number>[] = [];
+	protected valueMotions: Motion<T>[] = [];
+	private privateSequence: Source<T extends Color3 ? ColorSequence : NumberSequence>;
+	sequence = (): T extends Color3 ? ColorSequence : NumberSequence => this.privateSequence();
 	constructor(input: GradientInput<T>[]) {
 		this.setupMotion(this.formatInput(input));
 		this.privateSequence = source(this.calcuclateSequence());
+	}
+
+	protected lightness = 0;
+	protected darkness = 0;
+	applyLightness(percentage: number) {
+		if (!typeIs(this.valueMotions[0], "Color3")) error("Apply lightness can only be used on color gradients");
+		const newGradient = new Gradient([new Color3(), new Color3()]);
+		newGradient.lightness = percentage;
+		newGradient.timeMotions = (this as Gradient<Color3>).timeMotions;
+		newGradient.valueMotions = (this as Gradient<Color3>).valueMotions;
+		return newGradient;
+	}
+
+	applyDarkness(percentage: number) {
+		if (!typeIs(this.valueMotions[0], "Color3")) error("Apply darkness can only be used on color gradients");
+		const newGradient = new Gradient([new Color3(), new Color3()]);
+		newGradient.darkness = percentage;
+		newGradient.timeMotions = (this as Gradient<Color3>).timeMotions;
+		newGradient.valueMotions = (this as Gradient<Color3>).valueMotions;
+		return newGradient;
+	}
+
+	detach() {
+		this.timeMotions = [...this.timeMotions];
+		this.valueMotions = [...this.valueMotions];
 	}
 
 	private setupMotion(formatedInput: [time: number, value: T][]) {
@@ -57,6 +69,9 @@ export class Gradient<T extends number | Color3> {
 	}
 	private calcuclateSequence() {
 		type Keypoint = T extends Color3 ? ColorSequenceKeypoint : NumberSequenceKeypoint;
+		const applyLightAndDark = (color: Color3) => {
+			return Lighten(Darken(color, this.darkness), this.lightness);
+		};
 		const isNumberSequence = typeIs(this.valueMotions[0].get(), "number");
 		const seqeuences: Keypoint[] = [];
 		const sortedValueMotions = this.valueMotions.sort((a, b) => {
@@ -73,29 +88,25 @@ export class Gradient<T extends number | Color3> {
 			seqeuences.push(
 				(isNumberSequence
 					? new NumberSequenceKeypoint(v, value as number)
-					: new ColorSequenceKeypoint(v, value as Color3)) as Keypoint,
+					: new ColorSequenceKeypoint(v, applyLightAndDark(value as Color3))) as Keypoint,
 			);
 
 			if (i + 1 === arr.size() && v !== 1) {
 				seqeuences.push(
 					(isNumberSequence
 						? new NumberSequenceKeypoint(1, value as number)
-						: new ColorSequenceKeypoint(1, value as Color3)) as Keypoint,
+						: new ColorSequenceKeypoint(1, applyLightAndDark(value as Color3))) as Keypoint,
 				);
 			}
 		});
-		return (isNumberSequence
-			? new NumberSequence(seqeuences as NumberSequenceKeypoint[])
-			: new ColorSequence(seqeuences as ColorSequenceKeypoint[])) as unknown as T extends Color3 | number
-			? PrimativeInput<B> extends number
-				? NumberSequence
-				: ColorSequence
-			: T extends Color3
-				? ColorSequence
-				: NumberSequence;
+		return (
+			isNumberSequence
+				? new NumberSequence(seqeuences as NumberSequenceKeypoint[])
+				: new ColorSequence(seqeuences as ColorSequenceKeypoint[])
+		) as T extends Color3 ? ColorSequence : NumberSequence;
 	}
 
-	private formatInput(input: B[]) {
+	private formatInput(input: GradientInput<T>[]) {
 		const size = input.size();
 		const per = 1 / (size - 1);
 		const nonSpecificTime = !typeIs(input[0], "table");
@@ -126,8 +137,8 @@ export class Gradient<T extends number | Color3> {
 		this.privateSequence(this.calcuclateSequence());
 	}
 
-	spring(input: PrimativeInput<B>[], springOptions?: SpringOptions) {
-		const formated = this.formatInput(input as B[]);
+	spring(input: T[], springOptions?: SpringOptions) {
+		const formated = this.formatInput(input as GradientInput<T>[]);
 		const timeOnly = formated.map((v) => v[0]);
 		const valueOnly = formated.map((v) => v[1]);
 
@@ -176,8 +187,8 @@ export class Gradient<T extends number | Color3> {
 		});
 	}
 
-	set(input: PrimativeInput<B>[]) {
-		const formated = this.formatInput(input as B[]);
+	set(input: T[]) {
+		const formated = this.formatInput(input as GradientInput<T>[]);
 		const timeOnly = formated.map((v) => v[0]);
 		const valueOnly = formated.map((v) => v[1]);
 
