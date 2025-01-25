@@ -82,6 +82,7 @@ export class Gradient<T extends number | Color3> {
 
 	setTransform(f: (v: T) => T) {
 		this.transform = f;
+		return this;
 	}
 
 	private calcuclateSequence() {
