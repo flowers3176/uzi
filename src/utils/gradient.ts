@@ -18,6 +18,7 @@ if (RunService.IsServer()) {
 	pcall(cleanup, updateSignal);
 }
 export class Gradient<T extends number | Color3> {
+	protected transform = (v: T): T => v;
 	protected timeMotions: Motion<number>[] = [];
 	protected valueMotions: Motion<T>[] = [];
 	private privateSequence: Source<T extends Color3 ? ColorSequence : NumberSequence>;
@@ -76,7 +77,11 @@ export class Gradient<T extends number | Color3> {
 		const newGrad = new Gradient<number | Color3>([isColor ? 0 : new Color3(), isColor ? 0 : new Color3()]);
 		newGrad.valueMotions = [...this.valueMotions];
 		newGrad.timeMotions = [...this.timeMotions];
-		return newGrad as Gradient<T>;
+		return newGrad as unknown as Gradient<T>;
+	}
+
+	setTransform(f: (v: T) => T) {
+		this.transform = f;
 	}
 
 	private calcuclateSequence() {
@@ -99,15 +104,21 @@ export class Gradient<T extends number | Color3> {
 			const value = sortedValueMotions[i].get();
 			seqeuences.push(
 				(isNumberSequence
-					? new NumberSequenceKeypoint(v, value as number)
-					: new ColorSequenceKeypoint(v, applyLightAndDark(value as Color3))) as Keypoint,
+					? new NumberSequenceKeypoint(v, this.transform(value as T) as number)
+					: new ColorSequenceKeypoint(
+							v,
+							applyLightAndDark(this.transform(value as T) as Color3),
+						)) as Keypoint,
 			);
 
 			if (i + 1 === arr.size() && v !== 1) {
 				seqeuences.push(
 					(isNumberSequence
-						? new NumberSequenceKeypoint(1, value as number)
-						: new ColorSequenceKeypoint(1, applyLightAndDark(value as Color3))) as Keypoint,
+						? new NumberSequenceKeypoint(1, this.transform(value as T) as number)
+						: new ColorSequenceKeypoint(
+								1,
+								applyLightAndDark(this.transform(value as T) as Color3),
+							)) as Keypoint,
 				);
 			}
 		});
