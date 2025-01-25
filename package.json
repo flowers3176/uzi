@@ -44,6 +44,7 @@
     "@rbxts/charm": "^0.8.1",
     "@rbxts/colour-utils": "^1.4.1",
     "@rbxts/immut": "^0.4.4-ts.0",
+    "@rbxts/lemon-signal": "^1.2.0",
     "@rbxts/ripple": "^0.9.2",
     "@rbxts/services": "^1.5.5",
     "@rbxts/ui-labs": "^2.3.5",
