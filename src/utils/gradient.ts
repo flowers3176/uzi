@@ -6,6 +6,7 @@ import { cleanup, source, Source, untrack } from "@rbxts/vide";
 import { deepEqual } from "./deep-equal";
 
 type GradientInput<T> = T | [time: number, value: T];
+type Primative<T> = T extends number ? number : Color3;
 const updateSignal = new Signal();
 if (RunService.IsServer()) {
 	const connection = RunService.Heartbeat.Connect(() => updateSignal.Fire());
@@ -33,27 +34,13 @@ export class Gradient<T extends number | Color3> {
 	protected darkness = 0;
 	applyLightness(percentage: number) {
 		if (!typeIs(this.valueMotions[0].get(), "Color3")) error("Apply lightness can only be used on color gradients");
-		const newGradient = new Gradient([new Color3(), new Color3()]);
-		newGradient.lightness = percentage;
-		newGradient.timeMotions = (this as Gradient<Color3>).timeMotions;
-		newGradient.valueMotions = (this as Gradient<Color3>).valueMotions;
-		newGradient.updateSequence();
-		return newGradient;
+		this.lightness = percentage;
+		return this;
 	}
 
 	applyDarkness(percentage: number) {
 		if (!typeIs(this.valueMotions[0].get(), "Color3")) error("Apply darkness can only be used on color gradients");
-		const newGradient = new Gradient([new Color3(), new Color3()]);
-		newGradient.darkness = percentage;
-		newGradient.timeMotions = (this as Gradient<Color3>).timeMotions;
-		newGradient.valueMotions = (this as Gradient<Color3>).valueMotions;
-		newGradient.updateSequence();
-		return newGradient;
-	}
-
-	detach() {
-		this.timeMotions = [...this.timeMotions];
-		this.valueMotions = [...this.valueMotions];
+		this.darkness = percentage;
 		return this;
 	}
 
@@ -83,6 +70,15 @@ export class Gradient<T extends number | Color3> {
 			}
 		});
 	}
+
+	clone() {
+		const isColor = typeIs(this.valueMotions[0], "Color3");
+		const newGrad = new Gradient<number | Color3>([isColor ? 0 : new Color3(), isColor ? 0 : new Color3()]);
+		newGrad.valueMotions = [...this.valueMotions];
+		newGrad.timeMotions = [...this.timeMotions];
+		return newGrad as Gradient<T>;
+	}
+
 	private calcuclateSequence() {
 		type Keypoint = T extends Color3 ? ColorSequenceKeypoint : NumberSequenceKeypoint;
 		const applyLightAndDark = (color: Color3) => {
@@ -159,7 +155,7 @@ export class Gradient<T extends number | Color3> {
 		});
 	}
 
-	spring(input: T[], springOptions?: SpringOptions) {
+	spring(input: Primative<T>[], springOptions?: SpringOptions) {
 		const formated = this.formatInput(input as GradientInput<T>[]);
 		const timeOnly = formated.map((v) => v[0]);
 		const valueOnly = formated.map((v) => v[1]);
@@ -208,7 +204,7 @@ export class Gradient<T extends number | Color3> {
 		});
 	}
 
-	set(input: T[]) {
+	set(input: Primative<T>[]) {
 		const formated = this.formatInput(input as GradientInput<T>[]);
 		const timeOnly = formated.map((v) => v[0]);
 		const valueOnly = formated.map((v) => v[1]);
