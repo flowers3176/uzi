@@ -3,7 +3,7 @@ import { source, Source } from "@rbxts/vide";
 
 type GradientInput<T> = T | [time: number, value: T];
 type PrimativeInput<T> = T extends Color3 ? Color3 : number;
-export class Gradient<T extends number | Color3, B extends GradientInput<T> = GradientInput<T>> {
+export class Gradient<T extends number | Color3> {
 	private timeMotions: Motion<number>[] = [];
 	private valueMotions: Motion<T>[] = [];
 	private privateSequence: Source<
@@ -22,7 +22,7 @@ export class Gradient<T extends number | Color3, B extends GradientInput<T> = Gr
 		: T extends Color3
 			? ColorSequence
 			: NumberSequence = () => this.privateSequence();
-	constructor(input: B[]) {
+	constructor(input: GradientInput<T>[]) {
 		this.setupMotion(this.formatInput(input));
 		this.privateSequence = source(this.calcuclateSequence());
 	}
