@@ -15,6 +15,7 @@ interface TextLabelProps {
 	color?: Derivable<Color3 | Gradient<Color3>>;
 	secondaryColor?: Derivable<Gradient<Color3> | Color3>;
 	gradientRotation?: Derivable<number>;
+	gradientOffset?: Derivable<Vector2>;
 	zIndex?: Derivable<number>;
 	textSize?: Derivable<number>;
 	horizontalAlignment?: "Right" | "Center" | "Left";
@@ -69,6 +70,7 @@ export function TextLabel({
 	children,
 	color,
 	gradientRotation,
+	gradientOffset,
 	position,
 	size,
 	text,
@@ -230,6 +232,7 @@ export function TextLabel({
 				<Show when={() => typeIs(read(transparency), "table") || typeIs(read(color), "table")}>
 					{() => (
 						<uigradient
+							Offset={gradientOffset}
 							Rotation={gradientRotation}
 							action={destroyCleanUp}
 							Color={() => {

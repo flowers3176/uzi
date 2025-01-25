@@ -22,6 +22,7 @@ export interface FrameProps {
 	children?: Node;
 	rotation?: Derivable<number>;
 	gradientRotation?: Derivable<number>;
+	gradientOffset?: Derivable<Vector2>;
 }
 
 const defaultColorSequence = new ColorSequence(new Color3(1, 1, 1));
@@ -43,6 +44,7 @@ export function Frame(props: FrameProps) {
 		anchorPoint,
 		transparency,
 		gradientRotation,
+		gradientOffset,
 	} = props;
 	const borderDataBaseSRC = useAtom(borderDataBase);
 	const frameRef = source<Frame>();
@@ -90,6 +92,7 @@ export function Frame(props: FrameProps) {
 					{() => (
 						<uigradient
 							Rotation={gradientRotation}
+							Offset={gradientOffset}
 							action={destroyCleanUp}
 							Color={() => {
 								const val = read(color);
@@ -108,10 +111,11 @@ export function Frame(props: FrameProps) {
 			</BaseFrame>
 			<BaseFrame size={UDim2.fromScale(1, 1)} transparency={1} zIndex={-1} name={"BorderContainers"}>
 				<For each={frameBorders}>
-					{({ color, offset, thickness, transparency, zIndex, gradientRotation }) => (
+					{({ color, offset, thickness, transparency, zIndex, gradientRotation, gradientOffset }) => (
 						<Frame
 							color={color}
 							rotation={rotation}
+							gradientOffset={gradientOffset}
 							gradientRotation={gradientRotation}
 							anchorPoint={new Vector2(0.5, 0.5)}
 							transparency={transparency}

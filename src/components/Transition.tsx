@@ -16,6 +16,7 @@ interface TransitionProps {
 	events?: Vide.InstanceEventAttributes<Frame>;
 	children?: Vide.Node;
 	gradientRotation?: Derivable<number>;
+	gradientOffset?: Derivable<Vector2>;
 	before?: () => Vide.Node;
 }
 

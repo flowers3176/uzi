@@ -10,6 +10,7 @@ export interface BorderProps {
 	transparency?: Derivable<number | Gradient<number>>;
 	zIndex?: Derivable<number>;
 	gradientRotation?: Derivable<number>;
+	gradientOffset?: Derivable<Vector2>;
 }
 
 let id = 0;

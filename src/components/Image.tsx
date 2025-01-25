@@ -35,6 +35,7 @@ export interface ImageProps {
 	tileSize?: Derivable<UDim2>;
 	rotation?: Derivable<number>;
 	gradientRotation?: Derivable<number>;
+	gradientOffset?: Derivable<Vector2>;
 }
 
 const defaultColorSequence = new ColorSequence(new Color3(1, 1, 1));
@@ -47,6 +48,7 @@ export function Image({
 	clipsDescendants,
 	color,
 	gradientRotation,
+	gradientOffset,
 	layoutOrder,
 	rectOffset,
 	rectSize,
@@ -96,6 +98,7 @@ export function Image({
 			<Show when={() => typeIs(read(transparency), "table") || typeIs(read(color), "table")}>
 				{() => (
 					<uigradient
+						Offset={gradientOffset}
 						Rotation={gradientRotation}
 						action={destroyCleanUp}
 						Color={() => {
