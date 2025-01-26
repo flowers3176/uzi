@@ -1,4 +1,4 @@
-import Vide, { Derivable, effect, read, Show, source } from "@rbxts/vide";
+import Vide, { action, cleanup, Derivable, effect, read, Show, source } from "@rbxts/vide";
 import { Gradient } from "../utils/gradient";
 import { destroyCleanUp } from "../utils/destroyCleanUp";
 
@@ -69,6 +69,9 @@ export function Transition(props: TransitionProps) {
 			ClipsDescendants={props.clipsDescendants ?? true}
 			{...props.events}
 		>
+			{action((v: Frame) => {
+				cleanup(v);
+			})}
 			{props.before?.()}
 
 			<canvasgroup
