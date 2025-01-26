@@ -6,6 +6,7 @@ import { destroyCleanUp } from "../utils/destroyCleanUp";
 export interface ImageProps {
 	imageId?: Derivable<string>;
 	size?: Derivable<UDim2>;
+	automaticSize?: Derivable<Enum.AutomaticSize["Name"] | Enum.AutomaticSize>;
 	position?: Derivable<UDim2>;
 	anchorPoint?: Derivable<Vector2>;
 	color?: Derivable<Color3 | Gradient<Color3>>;
@@ -46,6 +47,7 @@ export function Image({
 	anchorPoint,
 	children,
 	clipsDescendants,
+	automaticSize,
 	color,
 	gradientRotation,
 	gradientOffset,
@@ -92,6 +94,7 @@ export function Image({
 			Position={() => read(position) ?? UDim2.fromScale(0.5, 0.5)}
 			AnchorPoint={() => read(anchorPoint) ?? new Vector2(0.5, 0.5)}
 			ZIndex={zIndex}
+			AutomaticSize={automaticSize}
 			LayoutOrder={layoutOrder}
 		>
 			{children}

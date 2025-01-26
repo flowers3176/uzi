@@ -5,6 +5,7 @@ import Vide from "@rbxts/vide";
 interface GroupProps {
 	size?: Derivable<UDim2>;
 	name?: Derivable<string>;
+	automaticSize?: Derivable<Enum.AutomaticSize["Name"] | Enum.AutomaticSize>;
 	position?: Derivable<UDim2>;
 	anchorPoint?: Derivable<Vector2>;
 	rotation?: Derivable<number>;

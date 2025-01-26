@@ -1,4 +1,4 @@
-import { action, Derivable, For, Node, read, Show, source } from "@rbxts/vide";
+import { action, cleanup, Derivable, For, Node, read, Show, source } from "@rbxts/vide";
 import { BaseFrame } from "./BaseFrame";
 import { Gradient } from "../utils/gradient";
 import Vide from "@rbxts/vide";
@@ -10,6 +10,7 @@ import { destroyCleanUp } from "../utils/destroyCleanUp";
 export interface FrameProps {
 	name?: Derivable<string>;
 	size?: Derivable<UDim2>;
+	automaticSize?: Derivable<Enum.AutomaticSize["Name"] | Enum.AutomaticSize>;
 	position?: Derivable<UDim2>;
 	anchorPoint?: Derivable<Vector2>;
 	color?: Derivable<Color3 | Gradient<Color3>>;
@@ -39,6 +40,7 @@ export function Frame(props: FrameProps) {
 		layoutOrder,
 		name,
 		position,
+		automaticSize,
 		zIndex,
 		size,
 		anchorPoint,
@@ -83,6 +85,7 @@ export function Frame(props: FrameProps) {
 					if (typeIs(val, "number")) return val;
 				}}
 				size={UDim2.fromScale(1, 1)}
+				automaticSize={automaticSize}
 				visible={visible}
 			>
 				{action((instance) => {
@@ -111,51 +114,63 @@ export function Frame(props: FrameProps) {
 			</BaseFrame>
 			<BaseFrame size={UDim2.fromScale(1, 1)} transparency={1} zIndex={-1} name={"BorderContainers"}>
 				<For each={frameBorders}>
-					{({ color, offset, thickness, transparency, zIndex, gradientRotation, gradientOffset }) => (
-						<Frame
-							color={color}
-							rotation={rotation}
-							gradientOffset={gradientOffset}
-							gradientRotation={gradientRotation}
-							anchorPoint={new Vector2(0.5, 0.5)}
-							transparency={transparency}
-							zIndex={zIndex}
-							size={() => {
-								const thicknessVal = read(thickness);
-								const scale = (thicknessVal?.Scale ?? 0) * 2;
-								const offset = (thicknessVal?.Offset ?? 0) * 2;
-								return UDim2.fromScale(1, 1).add(new UDim2(scale, offset, scale, offset));
-							}}
-							position={() => UDim2.fromScale(0.5, 0.5).add(read(offset) ?? UDim2.fromOffset())}
-						>
-							{action((border) => {
-								const frame = frameRef();
-								function processUICorner(uiCorner: UICorner) {
-									const copyCorner = new Instance("UICorner");
-									copyCorner.CornerRadius = uiCorner.CornerRadius;
-									copyCorner.Parent = border;
-									const connection = uiCorner
-										.GetPropertyChangedSignal("CornerRadius")
-										.Connect(() => (copyCorner.CornerRadius = uiCorner.CornerRadius));
+					{({ color, offset, thickness, transparency, zIndex, gradientRotation, gradientOffset }) => {
+						const absSize = source(frameRef()?.AbsoluteSize);
+						const connection = frameRef()
+							?.GetPropertyChangedSignal("AbsoluteSize")
+							.Connect(() => {
+								source(frameRef()?.AbsoluteSize);
+							});
+						cleanup(() => connection?.Disconnect());
+						return (
+							<Frame
+								color={color}
+								rotation={rotation}
+								gradientOffset={gradientOffset}
+								gradientRotation={gradientRotation}
+								anchorPoint={new Vector2(0.5, 0.5)}
+								transparency={transparency}
+								zIndex={zIndex}
+								size={() => {
+									const thicknessVal = read(thickness);
+									const scale = (thicknessVal?.Scale ?? 0) * 2;
+									const offset = (thicknessVal?.Offset ?? 0) * 2;
+									const absSizeVal = absSize() ?? new Vector2();
+									return UDim2.fromOffset(absSizeVal.X, absSizeVal.Y).add(
+										new UDim2(scale, offset, scale, offset),
+									);
+								}}
+								position={() => UDim2.fromScale(0.5, 0.5).add(read(offset) ?? UDim2.fromOffset())}
+							>
+								{action((border) => {
+									const frame = frameRef();
+									function processUICorner(uiCorner: UICorner) {
+										const copyCorner = new Instance("UICorner");
+										copyCorner.CornerRadius = uiCorner.CornerRadius;
+										copyCorner.Parent = border;
+										const connection = uiCorner
+											.GetPropertyChangedSignal("CornerRadius")
+											.Connect(() => (copyCorner.CornerRadius = uiCorner.CornerRadius));
 
-									const connection2 = uiCorner.AncestryChanged.Connect(() => {
-										if (!frame) return copyCorner.Destroy();
-										if (!uiCorner.IsDescendantOf(frame)) {
-											copyCorner.Destroy();
-											connection.Disconnect();
-											connection2.Disconnect();
-										}
+										const connection2 = uiCorner.AncestryChanged.Connect(() => {
+											if (!frame) return copyCorner.Destroy();
+											if (!uiCorner.IsDescendantOf(frame)) {
+												copyCorner.Destroy();
+												connection.Disconnect();
+												connection2.Disconnect();
+											}
+										});
+									}
+									const existing = frame?.FindFirstChildOfClass("UICorner");
+									frame?.ChildAdded.Connect((child) => {
+										if (!child.IsA("UICorner")) return;
+										processUICorner(child);
 									});
-								}
-								const existing = frame?.FindFirstChildOfClass("UICorner");
-								frame?.ChildAdded.Connect((child) => {
-									if (!child.IsA("UICorner")) return;
-									processUICorner(child);
-								});
-								if (existing) processUICorner(existing);
-							})}
-						</Frame>
-					)}
+									if (existing) processUICorner(existing);
+								})}
+							</Frame>
+						);
+					}}
 				</For>
 			</BaseFrame>
 		</BaseFrame>

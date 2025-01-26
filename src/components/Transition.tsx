@@ -12,6 +12,7 @@ interface TransitionProps {
 	size?: Derivable<UDim2>;
 	rotation?: Derivable<number>;
 	zIndex?: Derivable<number>;
+	automaticSize?: Derivable<Enum.AutomaticSize["Name"] | Enum.AutomaticSize>;
 	layoutOrder?: Derivable<number>;
 	events?: Vide.InstanceEventAttributes<Frame>;
 	children?: Vide.Node;
@@ -20,7 +21,6 @@ interface TransitionProps {
 	before?: () => Vide.Node;
 }
 
-const defaultColorSequence = new ColorSequence(new Color3(1, 1, 1));
 const defaultNumberSequence = new NumberSequence(0);
 
 export function Transition(props: TransitionProps) {
@@ -37,6 +37,7 @@ export function Transition(props: TransitionProps) {
 	<frame
 		BackgroundTransparency={1}
 		Active={props.active}
+		AutomaticSize={props.automaticSize}
 		Size={new UDim2(1, 0, 1, 0)}
 		Parent={() => (transitioning() ? canvasGroupRef() : frameRef())}
 	>
@@ -56,6 +57,7 @@ export function Transition(props: TransitionProps) {
 
 	return (
 		<frame
+			AutomaticSize={props.automaticSize}
 			action={frameRef}
 			Name="Transition"
 			BackgroundTransparency={1}
@@ -84,6 +86,7 @@ export function Transition(props: TransitionProps) {
 				}}
 				GroupColor3={props.groupColor}
 				BackgroundTransparency={1}
+				AutomaticSize={props.automaticSize}
 				Size={new UDim2(1, 0, 1, 0)}
 			>
 				<Show when={() => typeIs(read(props.groupTransparency), "table")}>

@@ -13,6 +13,7 @@ export interface BaseFrameProps {
 	rotation?: Derivable<number | undefined>;
 	clipsDescendants?: Derivable<boolean | undefined>;
 	visible?: Derivable<boolean | undefined>;
+	automaticSize?: Derivable<Enum.AutomaticSize["Name"] | Enum.AutomaticSize>;
 	zIndex?: Derivable<number | undefined>;
 	children?: Node;
 }
@@ -31,6 +32,7 @@ export function BaseFrame({
 	position,
 	visible,
 	size,
+	automaticSize,
 	zIndex,
 	transparency,
 	layoutOrder,
@@ -40,6 +42,7 @@ export function BaseFrame({
 }: BaseFrameProps) {
 	return (
 		<frame
+			AutomaticSize={automaticSize}
 			Name={name}
 			Active={defaultValueDerivable(active, true)}
 			BackgroundColor3={defaultValueDerivable(color, new Color3(1, 1, 1))}
