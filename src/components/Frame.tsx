@@ -69,32 +69,6 @@ export function Frame(props: FrameProps) {
 			zIndex={zIndex}
 			anchorPoint={anchorPoint}
 		>
-			{action((baseFrame) => {
-				const frame = frameRef();
-				function processUIRatio(uiRatio: UIAspectRatioConstraint) {
-					const copyRatio = new Instance("UIAspectRatioConstraint");
-					copyRatio.AspectRatio = uiRatio.AspectRatio;
-					copyRatio.Parent = baseFrame;
-					const connection = uiRatio
-						.GetPropertyChangedSignal("AspectRatio")
-						.Connect(() => (copyRatio.AspectRatio = uiRatio.AspectRatio));
-
-					const connection2 = uiRatio.AncestryChanged.Connect(() => {
-						if (!frame) return copyRatio.Destroy();
-						if (!uiRatio.IsDescendantOf(frame)) {
-							copyRatio.Destroy();
-							connection.Disconnect();
-							connection2.Disconnect();
-						}
-					});
-				}
-				const existing = frame?.FindFirstChildOfClass("UIAspectRatioConstraint");
-				frame?.ChildAdded.Connect((child) => {
-					if (!child.IsA("UIAspectRatioConstraint")) return;
-					processUIRatio(child);
-				});
-				if (existing) processUIRatio(existing);
-			})}
 			<BaseFrame
 				name={"Body"}
 				rotation={rotation}
@@ -184,6 +158,32 @@ export function Frame(props: FrameProps) {
 					)}
 				</For>
 			</BaseFrame>
+			{action((baseFrame) => {
+				const frame = frameRef();
+				function processUIRatio(uiRatio: UIAspectRatioConstraint) {
+					const copyRatio = new Instance("UIAspectRatioConstraint");
+					copyRatio.AspectRatio = uiRatio.AspectRatio;
+					copyRatio.Parent = baseFrame;
+					const connection = uiRatio
+						.GetPropertyChangedSignal("AspectRatio")
+						.Connect(() => (copyRatio.AspectRatio = uiRatio.AspectRatio));
+
+					const connection2 = uiRatio.AncestryChanged.Connect(() => {
+						if (!frame) return copyRatio.Destroy();
+						if (!uiRatio.IsDescendantOf(frame)) {
+							copyRatio.Destroy();
+							connection.Disconnect();
+							connection2.Disconnect();
+						}
+					});
+				}
+				const existing = frame?.FindFirstChildOfClass("UIAspectRatioConstraint");
+				frame?.ChildAdded.Connect((child) => {
+					if (!child.IsA("UIAspectRatioConstraint")) return;
+					processUIRatio(child);
+				});
+				if (existing) processUIRatio(existing);
+			})}
 		</BaseFrame>
 	);
 }
