@@ -1,6 +1,6 @@
 {
   "name": "@rbxts/uzi",
-  "version": "0.2.47",
+  "version": "0.2.48",
   "main": "out/init.lua",
   "scripts": {
     "build": "rbxtsc",
