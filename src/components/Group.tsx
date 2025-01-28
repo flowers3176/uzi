@@ -21,6 +21,7 @@ export function Group(props: GroupProps) {
 		<Frame
 			size={UDim2.fromScale(1, 1)}
 			transparency={1}
+			active={false}
 			position={UDim2.fromScale(0.5, 0.5)}
 			anchorPoint={new Vector2(0.5, 0.5)}
 			{...props}

@@ -1,4 +1,4 @@
-import Vide, { Derivable, Node, read } from "@rbxts/vide";
+import Vide, { Derivable, derive, Node, read } from "@rbxts/vide";
 import { destroyCleanUp } from "../utils/destroyCleanUp";
 
 export interface BaseFrameProps {
@@ -43,11 +43,17 @@ export function BaseFrame({
 	children,
 	anchorPoint,
 }: BaseFrameProps) {
+	const getTransparency = derive(() => {
+		const val = read(transparency);
+		if (typeIs(val, "number")) return val;
+		return 0;
+	});
+	const isActive = derive(() => read(active) ?? getTransparency() !== 1);
 	return (
 		<frame
 			AutomaticSize={automaticSize}
 			Name={name}
-			Active={defaultValueDerivable(active, true)}
+			Active={isActive}
 			BackgroundColor3={defaultValueDerivable(color, new Color3(1, 1, 1))}
 			Position={defaultValueDerivable(position, UDim2.fromScale(0.5, 0.5))}
 			Size={defaultValueDerivable(size, UDim2.fromOffset(100, 100))}

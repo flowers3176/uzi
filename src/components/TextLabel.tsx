@@ -24,6 +24,7 @@ interface TextLabelProps {
 	anchorPoint?: Derivable<Vector2>;
 	children?: Derivable<Node | undefined>;
 	interactable?: Derivable<boolean>;
+	active?: Derivable<boolean>;
 	transparency?: Derivable<number | Gradient<number>>;
 	color?: Derivable<Color3 | Gradient<Color3>>;
 	gradientRotation?: Derivable<number>;
@@ -44,6 +45,7 @@ interface CharProps {
 		height: number;
 		baseline: number;
 	}>;
+	active?: Derivable<boolean>;
 	transparency?: Derivable<number | Gradient<number>>;
 	interactable?: Derivable<boolean>;
 	gradientRotation?: Derivable<number>;
@@ -63,6 +65,7 @@ function Char({
 	font,
 	data,
 	scale,
+	active,
 	layoutOrder,
 	children,
 	lines,
@@ -78,6 +81,7 @@ function Char({
 	};
 	return (
 		<BaseFrame
+			active={active}
 			layoutOrder={layoutOrder}
 			interactable={interactable}
 			size={size}
@@ -85,6 +89,7 @@ function Char({
 			transparency={1}
 		>
 			<Image
+				active={active}
 				transparency={transparency}
 				imageId={() => read(font).sprite}
 				size={UDim2.fromScale(1, 1)}
@@ -113,6 +118,7 @@ export function TextLabel({
 	color,
 	gradientRotation,
 	gradientOffset,
+	active,
 	position,
 	size,
 	verticalAlignment = "Center",
@@ -190,13 +196,14 @@ export function TextLabel({
 		if (typeIs(val, "number")) return val;
 		return 0;
 	});
-	const isInteractable = derive(() => read(interactable) ?? getTransparency() !== 1);
+	const isActive = derive(() => read(active) ?? getTransparency() !== 1);
 
 	return show(
 		isCustomFont,
 		() => {
 			return (
 				<BaseFrame
+					active={isActive}
 					name={"TextLabel"}
 					zIndex={zIndex}
 					interactable={interactable}
@@ -220,6 +227,7 @@ export function TextLabel({
 						{(lineList, i) => {
 							return (
 								<BaseFrame
+									active={isActive}
 									interactable={interactable}
 									name={() => `Line${i()}`}
 									size={() =>
@@ -242,6 +250,7 @@ export function TextLabel({
 										{(charData, i) => {
 											return (
 												<Char
+													active={isActive}
 													transparency={transparency}
 													interactable={interactable}
 													lines={() => creationList().size()}
@@ -265,6 +274,7 @@ export function TextLabel({
 		},
 		() => (
 			<textlabel
+				Active={isActive}
 				Interactable={interactable}
 				action={destroyCleanUp}
 				Font={font as Enum.Font["Name"]}

@@ -1,4 +1,4 @@
-import Vide, { action, cleanup, Derivable, effect, read, Show, source } from "@rbxts/vide";
+import Vide, { action, cleanup, Derivable, derive, effect, read, Show, source } from "@rbxts/vide";
 import { Gradient } from "../utils/gradient";
 import { destroyCleanUp } from "../utils/destroyCleanUp";
 
@@ -27,6 +27,13 @@ export function Transition(props: TransitionProps) {
 	const frameRef = source<Frame>();
 	const canvasGroupRef = source<CanvasGroup>();
 
+	const getTransparency = derive(() => {
+		const val = read(props.groupTransparency);
+		if (typeIs(val, "number")) return val;
+		return 0;
+	});
+	const isActive = derive(() => read(props.active) ?? getTransparency() !== 1);
+
 	const transitioning = () => {
 		const color = read(props.groupColor) || new Color3(1, 1, 1);
 		const transparency = read(props.groupTransparency) ?? 0;
@@ -36,7 +43,7 @@ export function Transition(props: TransitionProps) {
 
 	<frame
 		BackgroundTransparency={1}
-		Active={props.active}
+		Active={isActive}
 		AutomaticSize={props.automaticSize}
 		Size={new UDim2(1, 0, 1, 0)}
 		Parent={() => (transitioning() ? canvasGroupRef() : frameRef())}
@@ -67,7 +74,7 @@ export function Transition(props: TransitionProps) {
 			Rotation={props.rotation}
 			LayoutOrder={props.layoutOrder}
 			ZIndex={props.zIndex}
-			Active={props.active}
+			Active={isActive}
 			ClipsDescendants={props.clipsDescendants ?? true}
 			{...props.events}
 		>
@@ -77,7 +84,7 @@ export function Transition(props: TransitionProps) {
 			{props.before?.()}
 
 			<canvasgroup
-				Active={props.active}
+				Active={isActive}
 				action={canvasGroupRef}
 				GroupTransparency={() => {
 					const val = read(props.groupTransparency);

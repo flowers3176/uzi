@@ -73,17 +73,17 @@ export function Image({
 		if (typeIs(val, "number")) return val;
 		return 0;
 	});
-	const isInteractable = derive(() => read(interactable) ?? getTransparency() !== 1);
+	const isActive = derive(() => read(active) ?? getTransparency() !== 1);
 	return (
 		<imagelabel
-			Interactable={isInteractable}
+			Interactable={interactable}
 			Image={imageId}
 			SliceCenter={sliceCenter}
 			SliceScale={sliceScale}
 			Rotation={rotation}
 			ImageRectOffset={rectOffset}
 			ImageRectSize={rectSize}
-			Active={active}
+			Active={isActive}
 			ClipsDescendants={clipsDescendants}
 			ImageColor3={() => {
 				const val = read(color);

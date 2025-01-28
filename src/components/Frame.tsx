@@ -65,24 +65,24 @@ export function Frame(props: FrameProps) {
 		if (typeIs(val, "number")) return val;
 		return 0;
 	});
-	const isInteractable = derive(() => read(interactable) ?? getTransparency() !== 1);
+	const isActive = derive(() => read(interactable) ?? getTransparency() !== 1);
 	return (
 		<BaseFrame
 			name={name}
-			active={active}
+			active={isActive}
 			transparency={1}
 			position={position}
 			size={size}
 			layoutOrder={layoutOrder}
-			interactable={isInteractable}
+			interactable={interactable}
 			zIndex={zIndex}
 			anchorPoint={anchorPoint}
 		>
 			<BaseFrame
 				name={"Body"}
 				rotation={rotation}
-				interactable={isInteractable}
-				active={active}
+				interactable={interactable}
+				active={isActive}
 				clipsDescendants={clipsDescendants}
 				color={() => {
 					const val = read(color);
@@ -123,14 +123,16 @@ export function Frame(props: FrameProps) {
 				size={UDim2.fromScale(1, 1)}
 				transparency={1}
 				zIndex={-1}
+				active={isActive}
 				name={"BorderContainers"}
-				interactable={isInteractable}
+				interactable={interactable}
 			>
 				<For each={frameBorders}>
 					{({ color, offset, thickness, transparency, zIndex, gradientRotation, gradientOffset }) => (
 						<Frame
+							active={isActive}
 							color={color}
-							interactable={isInteractable}
+							interactable={interactable}
 							rotation={rotation}
 							gradientOffset={gradientOffset}
 							gradientRotation={gradientRotation}
