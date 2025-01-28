@@ -1,4 +1,16 @@
-import Vide, { cleanup, read, show, Derivable, Node, For, action, source, FunctionNode, Show } from "@rbxts/vide";
+import Vide, {
+	cleanup,
+	read,
+	show,
+	Derivable,
+	Node,
+	For,
+	action,
+	source,
+	FunctionNode,
+	Show,
+	derive,
+} from "@rbxts/vide";
 import { CustomFont, FontSpriteData } from "../utils/customFont";
 import { Image } from "./Image";
 import { Gradient } from "../utils/gradient";
@@ -11,14 +23,15 @@ interface TextLabelProps {
 	position?: Derivable<UDim2>;
 	anchorPoint?: Derivable<Vector2>;
 	children?: Derivable<Node | undefined>;
+	interactable?: Derivable<boolean>;
 	transparency?: Derivable<number | Gradient<number>>;
 	color?: Derivable<Color3 | Gradient<Color3>>;
-	secondaryColor?: Derivable<Gradient<Color3> | Color3>;
 	gradientRotation?: Derivable<number>;
 	gradientOffset?: Derivable<Vector2>;
 	zIndex?: Derivable<number>;
 	textSize?: Derivable<number>;
 	horizontalAlignment?: "Right" | "Center" | "Left";
+	verticalAlignment?: "Top" | "Center" | "Bottom";
 	font?: Derivable<Enum.Font["Name"] | CustomFont>;
 }
 
@@ -79,6 +92,8 @@ export function TextLabel({
 	gradientOffset,
 	position,
 	size,
+	verticalAlignment = "Center",
+	horizontalAlignment = "Center",
 	text,
 	font,
 	textSize,
@@ -166,8 +181,8 @@ export function TextLabel({
 						absSize((v as Frame).AbsoluteSize);
 					})}
 					<uilistlayout
-						VerticalAlignment={"Center"}
-						HorizontalAlignment={"Center"}
+						VerticalAlignment={verticalAlignment}
+						HorizontalAlignment={horizontalAlignment}
 						FillDirection={"Vertical"}
 					/>
 					<For each={creationList}>
@@ -188,7 +203,7 @@ export function TextLabel({
 								>
 									<uilistlayout
 										VerticalAlignment={"Center"}
-										HorizontalAlignment={"Center"}
+										HorizontalAlignment={horizontalAlignment}
 										FillDirection={"Horizontal"}
 									/>
 									<For each={() => lineList}>
