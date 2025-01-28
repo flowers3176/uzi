@@ -44,6 +44,8 @@ interface CharProps {
 		height: number;
 		baseline: number;
 	}>;
+	transparency?: Derivable<number | Gradient<number>>;
+	interactable?: Derivable<boolean>;
 	gradientRotation?: Derivable<number>;
 	gradientOffset?: Derivable<Vector2>;
 	color?: Derivable<Color3 | Gradient<Color3>>;
@@ -57,16 +59,36 @@ interface CharProps {
 const defaultColorSequence = new ColorSequence(new Color3(1, 1, 1));
 const defaultNumberSequence = new NumberSequence(0);
 
-function Char({ font, data, scale, layoutOrder, children, lines, color, gradientOffset, gradientRotation }: CharProps) {
+function Char({
+	font,
+	data,
+	scale,
+	layoutOrder,
+	children,
+	lines,
+	color,
+	transparency,
+	interactable,
+	gradientOffset,
+	gradientRotation,
+}: CharProps) {
 	const size = () => {
 		const { width, height } = read(data);
 		return UDim2.fromOffset((width * read(scale)) / read(lines), (height * read(scale)) / read(lines));
 	};
 	return (
-		<BaseFrame layoutOrder={layoutOrder} size={size} name={() => read(data).text} transparency={1}>
+		<BaseFrame
+			layoutOrder={layoutOrder}
+			interactable={interactable}
+			size={size}
+			name={() => read(data).text}
+			transparency={1}
+		>
 			<Image
+				transparency={transparency}
 				imageId={() => read(font).sprite}
 				size={UDim2.fromScale(1, 1)}
+				interactable={interactable}
 				rectOffset={() => {
 					const { x, y } = read(data);
 					return new Vector2(x, y);
@@ -87,6 +109,7 @@ function Char({ font, data, scale, layoutOrder, children, lines, color, gradient
 export function TextLabel({
 	anchorPoint,
 	children,
+	interactable,
 	color,
 	gradientRotation,
 	gradientOffset,
@@ -162,6 +185,13 @@ export function TextLabel({
 		return result;
 	}
 
+	const getTransparency = derive(() => {
+		const val = read(transparency);
+		if (typeIs(val, "number")) return val;
+		return 0;
+	});
+	const isInteractable = derive(() => read(interactable) ?? getTransparency() !== 1);
+
 	return show(
 		isCustomFont,
 		() => {
@@ -169,6 +199,7 @@ export function TextLabel({
 				<BaseFrame
 					name={"TextLabel"}
 					zIndex={zIndex}
+					interactable={interactable}
 					position={position}
 					anchorPoint={anchorPoint}
 					size={() => read(size) ?? UDim2.fromScale(1, 1)}
@@ -189,6 +220,7 @@ export function TextLabel({
 						{(lineList, i) => {
 							return (
 								<BaseFrame
+									interactable={interactable}
 									name={() => `Line${i()}`}
 									size={() =>
 										new UDim2(
@@ -210,6 +242,8 @@ export function TextLabel({
 										{(charData, i) => {
 											return (
 												<Char
+													transparency={transparency}
+													interactable={interactable}
 													lines={() => creationList().size()}
 													layoutOrder={i}
 													scale={charSizeScale}
@@ -231,6 +265,7 @@ export function TextLabel({
 		},
 		() => (
 			<textlabel
+				Interactable={interactable}
 				action={destroyCleanUp}
 				Font={font as Enum.Font["Name"]}
 				TextScaled={() => read(textSize) === undefined}
