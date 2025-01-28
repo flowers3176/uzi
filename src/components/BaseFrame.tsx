@@ -10,8 +10,9 @@ export interface BaseFrameProps {
 	transparency?: Derivable<number | undefined>;
 	active?: Derivable<boolean | undefined>;
 	layoutOrder?: Derivable<number>;
+	interactable?: Derivable<boolean>;
 	rotation?: Derivable<number | undefined>;
-	clipsDescendants?: Derivable<boolean | undefined>;
+	clipsDescendants?: Derivable<boolean>;
 	visible?: Derivable<boolean | undefined>;
 	automaticSize?: Derivable<Enum.AutomaticSize["Name"] | Enum.AutomaticSize>;
 	zIndex?: Derivable<number | undefined>;
@@ -31,6 +32,8 @@ export function BaseFrame({
 	color,
 	position,
 	visible,
+	clipsDescendants,
+	interactable,
 	size,
 	automaticSize,
 	zIndex,
@@ -54,6 +57,7 @@ export function BaseFrame({
 			AnchorPoint={defaultValueDerivable(anchorPoint, new Vector2(0.5, 0.5))}
 			Rotation={defaultValueDerivable(rotation, 0)}
 			LayoutOrder={layoutOrder}
+			ClipsDescendants={clipsDescendants}
 			action={destroyCleanUp}
 		>
 			{children}
