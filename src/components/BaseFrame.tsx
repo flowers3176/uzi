@@ -57,6 +57,7 @@ export function BaseFrame({
 			AnchorPoint={defaultValueDerivable(anchorPoint, new Vector2(0.5, 0.5))}
 			Rotation={defaultValueDerivable(rotation, 0)}
 			LayoutOrder={layoutOrder}
+			Interactable={interactable}
 			ClipsDescendants={clipsDescendants}
 			action={destroyCleanUp}
 		>

@@ -1,4 +1,4 @@
-import { action, Derivable, For, Node, read, Show, source } from "@rbxts/vide";
+import { action, Derivable, derive, For, Node, read, Show, source } from "@rbxts/vide";
 import { BaseFrame } from "./BaseFrame";
 import { Gradient } from "../utils/gradient";
 import Vide from "@rbxts/vide";
@@ -11,6 +11,7 @@ export interface FrameProps {
 	name?: Derivable<string>;
 	size?: Derivable<UDim2>;
 	position?: Derivable<UDim2>;
+	interactable?: Derivable<boolean>;
 	anchorPoint?: Derivable<Vector2>;
 	color?: Derivable<Color3 | Gradient<Color3>>;
 	transparency?: Derivable<number | Gradient<number>>;
@@ -40,6 +41,7 @@ export function Frame(props: FrameProps) {
 		name,
 		position,
 		zIndex,
+		interactable,
 		size,
 		anchorPoint,
 		transparency,
@@ -58,6 +60,12 @@ export function Frame(props: FrameProps) {
 		frameBordersUnFormatted.forEach((v) => arrFormat.push(v));
 		return arrFormat;
 	};
+	const getTransparency = derive(() => {
+		const val = read(transparency);
+		if (typeIs(val, "number")) return val;
+		return 0;
+	});
+	const isInteractable = derive(() => read(interactable) ?? getTransparency() !== 1);
 	return (
 		<BaseFrame
 			name={name}
@@ -66,12 +74,14 @@ export function Frame(props: FrameProps) {
 			position={position}
 			size={size}
 			layoutOrder={layoutOrder}
+			interactable={isInteractable}
 			zIndex={zIndex}
 			anchorPoint={anchorPoint}
 		>
 			<BaseFrame
 				name={"Body"}
 				rotation={rotation}
+				interactable={isInteractable}
 				active={active}
 				clipsDescendants={clipsDescendants}
 				color={() => {
@@ -109,11 +119,18 @@ export function Frame(props: FrameProps) {
 				</Show>
 				{children}
 			</BaseFrame>
-			<BaseFrame size={UDim2.fromScale(1, 1)} transparency={1} zIndex={-1} name={"BorderContainers"}>
+			<BaseFrame
+				size={UDim2.fromScale(1, 1)}
+				transparency={1}
+				zIndex={-1}
+				name={"BorderContainers"}
+				interactable={isInteractable}
+			>
 				<For each={frameBorders}>
 					{({ color, offset, thickness, transparency, zIndex, gradientRotation, gradientOffset }) => (
 						<Frame
 							color={color}
+							interactable={isInteractable}
 							rotation={rotation}
 							gradientOffset={gradientOffset}
 							gradientRotation={gradientRotation}

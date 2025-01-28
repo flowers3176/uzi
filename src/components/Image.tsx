@@ -1,4 +1,4 @@
-import { Derivable, Node, read, Show } from "@rbxts/vide";
+import { Derivable, derive, Node, read, Show } from "@rbxts/vide";
 import { Gradient } from "../utils/gradient";
 import Vide from "@rbxts/vide";
 import { destroyCleanUp } from "../utils/destroyCleanUp";
@@ -13,6 +13,7 @@ export interface ImageProps {
 	transparency?: Derivable<number | Gradient<number>>;
 	active?: Derivable<boolean>;
 	clipsDescendants?: Derivable<boolean>;
+	interactable?: Derivable<boolean>;
 	visible?: Derivable<boolean>;
 	zIndex?: Derivable<number>;
 	layoutOrder?: Derivable<number>;
@@ -48,6 +49,7 @@ export function Image({
 	children,
 	clipsDescendants,
 	automaticSize,
+	interactable,
 	color,
 	gradientRotation,
 	gradientOffset,
@@ -66,8 +68,15 @@ export function Image({
 	visible,
 	zIndex,
 }: ImageProps) {
+	const getTransparency = derive(() => {
+		const val = read(transparency);
+		if (typeIs(val, "number")) return val;
+		return 0;
+	});
+	const isInteractable = derive(() => read(interactable) ?? getTransparency() !== 1);
 	return (
 		<imagelabel
+			Interactable={isInteractable}
 			Image={imageId}
 			SliceCenter={sliceCenter}
 			SliceScale={sliceScale}
